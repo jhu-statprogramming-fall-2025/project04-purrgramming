@@ -1,0 +1,348 @@
+---
+title: "Data Extraction"
+format: html
+---
+
+1. Loading R packages
+```{r}
+library(rvest)
+library(dplyr)
+library(purrr)
+library(tidyverse)
+library(httr)
+library(lubridate)
+library(here)
+library(jsonlite)
+
+#OMDB API wrappers
+library(imdbapi)
+library(ROMDB)
+```
+
+2. IF you already have wiki data: [skip to 6]
+```{r}
+wiki_films <- readRDS("data/wiki_films.RDS")
+clean_wiki_films <- readRDS("data/clean_wiki_films.RDS")
+```
+
+3. IF NOT: Creating a directory for local data 
+```{r}
+if (!dir.exists(here("data"))) {
+  dir.create(here("data"))
+}
+```
+
+[TEST] code for webscraping list of movies for the year 2000 from Wikipedia
+```{r}
+#sample code for 1 year (2000)
+html <- read_html(
+  "https://en.wikipedia.org/wiki/List_of_American_films_of_2000"
+)
+
+results <- html %>%
+  html_nodes(".wikitable") %>%
+  .[-1] %>% #removes the first table because it is for the top highest grossing for the specific year
+  html_table()
+
+#combines the separate tables (months) into one data frame, and adds a column with the relevant year
+film_2000 <- bind_rows(results) %>%
+  mutate(year = 2000)
+```
+
+4. [RUN THIS] Obtain list of American movies from Wikipedia from the years 2000 - 2025 
+```{r}
+#URLs for wikipedia pages for American films 2000-2025
+years <- 2000:2025
+
+urls <- paste0(
+  "https://en.wikipedia.org/wiki/List_of_American_films_of_",
+  years
+)
+
+#Function to get all movies from 2000-2025
+extract_wiki_movies <- function(url, year) {
+  html <- read_html(url)
+
+  results <- html %>%
+    html_nodes(".wikitable") %>%
+    .[-1] %>%
+    html_table()
+
+  bind_rows(results) %>%
+    mutate(year = year)
+}
+
+#using purrr to apply the custom function for all urls and years specified
+wiki_films <- map2_dfr(urls, years, extract_wiki_movies)
+
+
+#saving data
+saveRDS(wiki_films, file = here("data", "wiki_films.RDS"))
+```
+
+5. [RUN THIS] Clean wiki_films dataframe
+```{r}
+clean_wiki_films <- wiki_films %>%
+  filter(!is.na(Title)) %>%
+  mutate(
+    release = mdy(paste(Opening...1, Opening...2, year))
+  ) %>%
+  rename("Month" = "Opening...1") %>%
+  rename("Date" = "Opening...2") %>%
+  select(
+    -c(
+      "...7",
+      ".mw-parser-output .tooltip-dotted{border-bottom:1px dotted;cursor:help}Ref."
+    )
+  ) %>%
+  filter(release < "2025-11-18")
+
+
+#saving the data frame
+saveRDS(clean_wiki_films, file = here("data", "clean_wiki_films.RDS"))
+
+```
+
+6. [RUN THIS] Extracting list of films to get data from the IMDB API 
+```{r}
+#Extracting the list of films
+list_films <- clean_wiki_films %>%
+  pull(Title)
+```
+
+[TEST FOR 20 MOVIES] Use "IMDBAPI" Wrapper (which actually calls the OMDB API, not the IMDB API)
+```{r}
+#trial code with a list of 20 films
+trial <- list_films[1:20]
+
+test <- map_dfr(
+  trial,
+  ~ find_by_title(
+    .x,
+    type = "movie",
+    season = NULL,
+    episode = NULL,
+    year_of_release = NULL,
+    plot = "short",
+    include_tomatoes = FALSE,
+    api_key = omdb_api_key()
+  )
+)
+
+#de-duplicates entries
+test <- test %>%
+  distinct(imdbID, .keep_all = TRUE)
+
+#saves data
+saveRDS(test, file = here("data", "test.RDS"))
+```
+
+7. [RUN THIS] Split list of films into separate lists 
+```{r}
+#splitting list_films into separate smaller lists to run the API
+split_list <- function(x, chunk_size) {
+  split(x, ceiling(seq_along(x) / chunk_size))
+}
+
+list_sep <- split_list(list_films, 950)
+
+#getting separate lists
+imap(list_sep, ~ assign(paste0("list_", .y), .x, envir = .GlobalEnv))
+
+```
+
+Run List 1 
+```{r}
+data_1 <- map_dfr(
+  list_1,
+  ~ find_by_title(
+    .x,
+    type = "movie",
+    season = NULL,
+    episode = NULL,
+    year_of_release = NULL,
+    plot = "short",
+    include_tomatoes = FALSE,
+    api_key = omdb_api_key()
+  )
+)
+
+#de-duplicates entries
+data_1 <- data_1 %>%
+  distinct(imdbID, .keep_all = TRUE)
+
+saveRDS(data_1, file = here("data", "data_1.RDS"))
+```
+
+Run List 2
+```{r}
+data_2 <- map_dfr(
+  list_2,
+  ~ find_by_title(
+    .x,
+    type = "movie",
+    season = NULL,
+    episode = NULL,
+    year_of_release = NULL,
+    plot = "short",
+    include_tomatoes = FALSE,
+    api_key = omdb_api_key()
+  )
+)
+
+#de-duplicates entries
+data_2 <- data_2 %>%
+  distinct(imdbID, .keep_all = TRUE)
+
+saveRDS(data_2, file = here("data", "data_2.RDS"))
+```
+
+Run List 3 [DONE]
+```{r}
+data_3 <- map_dfr(
+  list_3,
+  ~ find_by_title(
+    .x,
+    type = "movie",
+    season = NULL,
+    episode = NULL,
+    year_of_release = NULL,
+    plot = "short",
+    include_tomatoes = FALSE,
+    api_key = omdb_api_key()
+  )
+)
+
+#de-duplicates entries
+data_3 <- data_3 %>%
+  distinct(imdbID, .keep_all = TRUE)
+
+saveRDS(data_3, file = here("data", "data_3.RDS"))
+```
+
+Run List 4 [DONE]
+```{r}
+data_4 <- map_dfr(
+  list_4,
+  ~ find_by_title(
+    .x,
+    type = "movie",
+    season = NULL,
+    episode = NULL,
+    year_of_release = NULL,
+    plot = "short",
+    include_tomatoes = FALSE,
+    api_key = omdb_api_key()
+  )
+)
+
+#de-duplicates entries
+data_4 <- data_4 %>%
+  distinct(imdbID, .keep_all = TRUE)
+
+saveRDS(data_4, file = here("data", "data_4.RDS"))
+```
+
+Run List 5 [DONE]
+```{r}
+data_5 <- map_dfr(
+  list_5,
+  ~ find_by_title(
+    .x,
+    type = "movie",
+    season = NULL,
+    episode = NULL,
+    year_of_release = NULL,
+    plot = "short",
+    include_tomatoes = FALSE,
+    api_key = omdb_api_key()
+  )
+)
+
+#de-duplicates entries
+data_5 <- data_5 %>%
+  distinct(imdbID, .keep_all = TRUE)
+
+saveRDS(data_5, file = here("data", "data_5.RDS"))
+```
+
+Run List 6 
+```{r}
+data_6 <- map_dfr(
+  list_6,
+  ~ find_by_title(
+    .x,
+    type = "movie",
+    season = NULL,
+    episode = NULL,
+    year_of_release = NULL,
+    plot = "short",
+    include_tomatoes = FALSE,
+    api_key = omdb_api_key()
+  )
+)
+
+#de-duplicates entries
+data_6 <- data_6 %>%
+  distinct(imdbID, .keep_all = TRUE)
+
+saveRDS(data_6, file = here("data", "data_6.RDS"))
+```
+
+Run List 7 [DONE]
+```{r}
+data_7 <- map_dfr(
+  list_7,
+  ~ find_by_title(
+    .x,
+    type = "movie",
+    season = NULL,
+    episode = NULL,
+    year_of_release = NULL,
+    plot = "short",
+    include_tomatoes = FALSE,
+    api_key = omdb_api_key()
+  )
+)
+
+#de-duplicates entries
+data_7 <- data_7 %>%
+  distinct(imdbID, .keep_all = TRUE)
+
+saveRDS(data_7, file = here("data", "data_7.RDS"))
+```
+
+Run List 8 
+```{r}
+data_8 <- map_dfr(
+  list_8,
+  ~ find_by_title(
+    .x,
+    type = "movie",
+    season = NULL,
+    episode = NULL,
+    year_of_release = NULL,
+    plot = "short",
+    include_tomatoes = FALSE,
+    api_key = omdb_api_key()
+  )
+)
+
+#de-duplicates entries
+data_8 <- data_8 %>%
+  distinct(imdbID, .keep_all = TRUE)
+
+saveRDS(data_8, file = here("data", "data_8.RDS"))
+```
+
+Reading in saved data from IMDB API and binding into one large dataset
+```{r}
+files <- list.files(
+  "data",
+  pattern = "^data_[0-9]+\\.RDS$",
+  full.names = TRUE
+)
+full_data <- map_dfr(files, readRDS)
+
+saveRDS(full_data, file = here("data", "full_data.RDS"))
+```
