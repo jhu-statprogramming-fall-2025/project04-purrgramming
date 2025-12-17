@@ -3,10 +3,12 @@
 Course: Statistical Programming Paradigm & Workflows
 Team: Purrgramming
 Repository: project04-purrgramming
+
 📌 Project Overview
 The film industry is a major cultural and economic force, yet predicting a movie’s box office performance remains highly uncertain despite substantial investments in production, marketing, and talent. 
 MovieProphet is a data-driven project that applies statistical and machine learning methods to explore the factors influencing movie profitability, 
 with the goal of improving pre-release box office prediction and understanding the characteristics associated with commercial success.
+
 🎯 Project Goals
 Using a comprehensive dataset of American films released between 2000 and 2025, this project examines how features such as production details, genre, release timing, runtime, and audience and critic ratings relate to box office outcomes.
 By comparing multiple predictive models and presenting results through interactive visualizations, MovieProphet aims to identify key predictors of movie success and provide interpretable insights to support data-informed decision-making.
