@@ -1,7 +1,9 @@
 🎬 MovieProphet: Predicting Movie Box Office Performance
 
 Course: Statistical Programming Paradigm & Workflows
+
 Team: Purrgramming
+
 Repository: project04-purrgramming
 
 📌 Project Overview
