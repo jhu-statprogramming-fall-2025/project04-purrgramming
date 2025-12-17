@@ -6,6 +6,8 @@ Team: Purrgramming
 
 Repository: project04-purrgramming
 
+Link to dashboard: https://rlim8.shinyapps.io/MovieProphet/
+
 📌 Project Overview
 
 The film industry is a major cultural and economic force, yet predicting a movie’s box office performance remains highly uncertain despite substantial investments in production, marketing, and talent. 
