@@ -15,25 +15,41 @@ By comparing multiple predictive models and presenting results through interacti
 
 👥 Team
 Mao Yang
+
 Jiayu Pan
+
 Rozanne Lim
+
 Fan Yu
+
 
 📁 Repository Structure
 project04-purrgramming/
 │
+
 ├── data/                         # Raw and processed datasets
+
 ├── rsconnect/                    # Deployment-related files
+
 ├── www/                          # Dashboard assets
+
 │
 ├── 1_Data_Collection.qmd         # Data collection workflow
+
 ├── 2_Data_Cleaning.qmd           # Data cleaning and preprocessing
+
 │
 ├── MovieProphet.Rmd              # Main dashboard source file
+
 ├── Project 4_ Movie Prophet.pdf  # Project presentation/report
+
 │
 ├── Proposal.qmd                  # Project proposal (Quarto)
+
 ├── Proposal.pdf                  # Project proposal (PDF)
+
 │
 ├── Final Write-up.pdf             # Final project write-up
+
 └── README.md                     # Project documentation
+
