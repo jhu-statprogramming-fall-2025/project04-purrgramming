@@ -25,8 +25,9 @@ Fan Yu
 
 
 📁 Repository Structure
+
 project04-purrgramming/
-│
+
 
 ├── data/                         # Raw and processed datasets
 
