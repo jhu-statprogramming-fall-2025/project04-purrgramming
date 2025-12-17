@@ -14,6 +14,7 @@ Using a comprehensive dataset of American films released between 2000 and 2025, 
 By comparing multiple predictive models and presenting results through interactive visualizations, MovieProphet aims to identify key predictors of movie success and provide interpretable insights to support data-informed decision-making.
 
 👥 Team
+
 Mao Yang
 
 Jiayu Pan
@@ -33,23 +34,19 @@ project04-purrgramming/
 
 ├── www/                          # Dashboard assets
 
-│
 ├── 1_Data_Collection.qmd         # Data collection workflow
 
 ├── 2_Data_Cleaning.qmd           # Data cleaning and preprocessing
 
-│
 ├── MovieProphet.Rmd              # Main dashboard source file
 
 ├── Project 4_ Movie Prophet.pdf  # Project presentation/report
 
-│
 ├── Proposal.qmd                  # Project proposal (Quarto)
 
 ├── Proposal.pdf                  # Project proposal (PDF)
 
-│
-├── Final Write-up.pdf             # Final project write-up
+├── Final Write-up.pdf            # Final project write-up
 
 └── README.md                     # Project documentation
 
